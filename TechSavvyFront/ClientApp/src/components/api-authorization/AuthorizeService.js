@@ -1,19 +1,17 @@
 import { UserManager, WebStorageStateStore } from 'oidc-client';
 import { ApplicationPaths, ApplicationName } from './ApiAuthorizationConstants';
+import axios from 'axios';
 
 export class AuthorizeService {
     _callbacks = [];
-    _nextSubscriptionId = 0;
     _user = null;
     _isAuthenticated = false;
 
-    // By default pop ups are disabled because they don't work properly on Edge.
-    // If you want to enable pop up authentication simply set this flag to false.
-    _popUpDisabled = true;
 
-    async isAuthenticated() {
-        const user = await this.getUser();
-        return !!user;
+    async isAuthenticated() {     
+        let response = axios.get('https://localhost:44368/authentication/login')
+            .then(response => this.setState({ totalReactPackages: response.data.total }));
+        return response;
     }
 
     async getUser() {
@@ -32,13 +30,11 @@ export class AuthorizeService {
         return user && user.access_token;
     }
 
-    // We try to authenticate the user in three different ways:
+    // We try to authenticate the user in two different ways:
     // 1) We try to see if we can authenticate the user silently. This happens
     //    when the user is already logged in on the IdP and is done using a hidden iframe
     //    on the client.
-    // 2) We try to authenticate the user using a PopUp Window. This might fail if there is a
-    //    Pop-Up blocker or the user has disabled PopUps.
-    // 3) If the two methods above fail, we redirect the browser to the IdP to perform a traditional
+    // 2) If the two methods above fail, we redirect the browser to the IdP to perform a traditional
     //    redirect flow.
     async signIn(state) {
         await this.ensureUserManagerInitialized();
@@ -51,10 +47,6 @@ export class AuthorizeService {
             console.log("Silent authentication error: ", silentError);
 
             try {
-                if (this._popUpDisabled) {
-                    throw new Error('Popup disabled. Change \'AuthorizeService.js:AuthorizeService._popupDisabled\' to false to enable it.')
-                }
-
                 const popUpUser = await this.userManager.signinPopup(this.createArguments());
                 this.updateState(popUpUser);
                 return this.success(state);
@@ -98,10 +90,6 @@ export class AuthorizeService {
     async signOut(state) {
         await this.ensureUserManagerInitialized();
         try {
-            if (this._popUpDisabled) {
-                throw new Error('Popup disabled. Change \'AuthorizeService.js:AuthorizeService._popupDisabled\' to false to enable it.')
-            }
-
             await this.userManager.signoutPopup(this.createArguments());
             this.updateState(undefined);
             return this.success(state);
@@ -132,7 +120,6 @@ export class AuthorizeService {
     updateState(user) {
         this._user = user;
         this._isAuthenticated = !!this._user;
-        this.notifySubscribers();
     }
 
 
