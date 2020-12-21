@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechSavvyTest", "TechSavvyT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechSavvyBack", "TechSavvyBack\TechSavvyBack.csproj", "{83B42422-976F-42BC-8EB1-E6E25AA01EA0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechSavvy", "TechSavvyFront\TechSavvy.csproj", "{D0A1F598-A3FF-437E-BABD-B1ADC9217DDA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechSavvy", "TechSavvy\TechSavvy.csproj", "{9DEA955B-4E35-40CF-8440-0E594D6E11EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{83B42422-976F-42BC-8EB1-E6E25AA01EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83B42422-976F-42BC-8EB1-E6E25AA01EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83B42422-976F-42BC-8EB1-E6E25AA01EA0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0A1F598-A3FF-437E-BABD-B1ADC9217DDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0A1F598-A3FF-437E-BABD-B1ADC9217DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0A1F598-A3FF-437E-BABD-B1ADC9217DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0A1F598-A3FF-437E-BABD-B1ADC9217DDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DEA955B-4E35-40CF-8440-0E594D6E11EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DEA955B-4E35-40CF-8440-0E594D6E11EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DEA955B-4E35-40CF-8440-0E594D6E11EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DEA955B-4E35-40CF-8440-0E594D6E11EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

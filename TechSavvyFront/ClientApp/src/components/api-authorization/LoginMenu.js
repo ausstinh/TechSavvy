@@ -14,17 +14,12 @@ export class LoginMenu extends Component {
             userName: null
         };
     }
+
     componentDidMount() {
-        // Simple GET request using axios
-        
-    }
-    componentDidMount() {
-        this._subscription = authService.subscribe(() => this.populateState());
         this.populateState();
     }
 
     componentWillUnmount() {
-        authService.unsubscribe(this._subscription);
     }
 
     async populateState() {
