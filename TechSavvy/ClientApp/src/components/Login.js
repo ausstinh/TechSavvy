@@ -10,21 +10,45 @@ class Login extends Component {
         super();
         this.state = {
             Email: '',
-            Password: ''
+            Password: '',
+               errors: {              
+                email: '',
+                password: '',
+                invalidUser: '',
+               }
         }
         this.Password = this?.Password?.bind(this);
         this.Email = this?.Email?.bind(this);
-        this.login = this?.login?.bind(this);
+        this.handleSubmit = this?.handleSubmit?.bind(this);
+        this.validate = this.validate.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
 /**
  * Handle Submit function that will send a post with the user state to authorize the user in the back end
- * @param {any} event
+ * @param {any} e
  */
-    login(event) {
-        debugger;
-        //fetch function to 
-        fetch('http://localhost:51282/Api/user/AuthenticateUser', {
+    handleSubmit(e) {
+        console.log(this.state.Email);
+        //check all field validations
+        if (this.state.Email === '') {
+            this.setState(prevState => ({
+                errors: {
+                    ...prevState.errors,
+                    email: 'Please enter a valid Email',
+                }
+            }));  
+        }
+        if (this.state.Password === '') {
+            this.setState(prevState => ({
+                errors: {
+                    ...prevState.errors,
+                    password: 'Password needs at least 1 uppercase and be 8 characters long',
+                },
+            }));   
+        }
+        //fetch function to authenticate user
+        fetch('http://localhost:44383/Api/user/AuthenticateUser', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -32,120 +56,71 @@ class Login extends Component {
             },
             body: JSON.stringify({
                 Email: this.state.Email,
-                Password: this.state.Password
+                Password: this.state.Password,
             })
         }).then((Response) => Response.json())
             .then((result) => {
                 console.log(result);
                 if (result.Status == 'Invalid')
-                    alert('Invalid User');
+                    this.setState(prevState => ({                     
+                        error: {
+                            ...prevState.errors,
+                            invalidUser:  'Invalid Login',
+                        },
+                    }));                
                 else
                     this.props.history.push("/Home");
             })
     }
 
- /*
- * NOTE: NOT FINISHED YET
- *Handle validation and update state of user state by change
- *@param  {any} event
- **/
-    handleChange = (event) => {
-        const { name, value } = event.target;
-        let errors = this.state.errors;
-        //regex test for actual email
-        var emailTest = new RegExp(/^(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
-        //regex test for 1 uppercase and at least 8 characters
-        var passwordTest = new RegExp(/^(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
-
-        //check event validation by name and set user state
-        switch (name) {
-            case 'email':
-                errors.email =
-                    emailTest.test(value)
-                        ? ''
-                        : 'Email is not valid!';
-                this.setState({ Email: event.target.value });
-                break;
-            case 'password':
-                errors.password =
-                    value.length < 8
-                        ? 'Password must be 8 characters long!'
-                            ? passwordTest.test(value)
-                            : ''
-                        : 'Password needs at least 1 uppercase and be 8 characters long!';
-                this.setState({ Password: event.target.value });
-                break;  
-            default:
-                break;
-        }
-
-        this.setState({ errors, [name]: value }, () => {
-            console.log(errors)
-        })
-    }
+    /*
+    * NOTE: NOT FINISHED YET
+    *Handle validation and update state of user state by change
+    *@param  {any} event
+    **/
+    handleChange(event) {    
+        this.validate(event);
+    };
 
 
     /*
-       * NOTE: NOT FINISHED YET BUT CLOSE
-       *Handle validation and update state of user state by change
-       *@param  {any} event
-       * */
-    validate() {
-        const { name, value } = event.target;
+    *
+    *Handle validation and update state of user state by change
+    *@param  {any} event
+    * */
+    validate(event) {
+        const name = event.target.name;
+        const value = event.target.value;
         let errors = this.state.errors;
-        //regex test for actual email
-        var emailTest = new RegExp(/^(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
-        //regex test for 1 uppercase and at least 8 characters
-        var passwordTest = new RegExp(/^(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
-
-        //check event validation by name and set user state     
+        console.log(this.state.errors);
+        console.log(value);
+        //check event validation by name and set user state
         switch (name) {
             case 'email':
-                errors.email =
-                    //is empty?
-                    event.target.value == 0
-                        ? 'Please enter an email'
-                        //is actual email?
-                        : emailTest.test(value)
-                            ? ''
-                            : 'Email is not valid!';
-                //set email state
-                this.setState({ Email: event.target.value });
+                this.setState(prevState => ({
+                    Email: value,
+                    errors: {
+                        ...prevState.errors,
+                        email: value.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)") || value === '' ? "" : 'Is not a valid email',
+                    }
+                }))             
                 break;
             case 'password':
-                errors.password =
-                    //is empty?
-                    event.target.value == 0
-                        ? 'Please enter a password'
-                        //password have at least 8 characters and has 1 uppercase?
-                        : value.length < 8 && passwordTest.test(value)
-                            ? ''
-                            : 'Password needs at least 1 uppercase and be 8 characters long!';
-                //set password state
-                this.setState({ Password: event.target.value });
+                this.setState(prevState => ({
+                    Password: value,
+                    errors: {
+                        ...prevState.errors,
+                        password: value.match("(^(?=.*?[A-Z]).{8,}$)") || value === '' ? '' : 'Password needs at least 1 uppercase and be 8 characters long!',
+                    },
+                }))
                 break;
             default:
                 break;
         }
-        //confirm password field will come later
-
-        //if (!input["confirm_password"]) {
-        //    isValid = false;
-        //    errors["confirm_password"] = "Please enter your confirm password.";
-        //}
-
-        //if (typeof input["password"] !== "undefined" && typeof input["confirm_password"] !== "undefined") {
-
-        //    if (input["password"] != input["confirm_password"]) {
-        //        isValid = false;
-        //        errors["password"] = "Passwords don't match.";
-        //    }
-        //}
-
-        this.setState({ errors, [name]: value }, () => {
-            console.log(errors)
-        })
     }
+    
+
+     
 
     //Login Form
     render() {
@@ -157,15 +132,17 @@ class Login extends Component {
                             <CardGroup>
                                 <Card className="p-2">
                                     <CardBody>
+                                        <div className="text-danger">{this.state.errors.invalidUser}</div>
                                     <Form>
- 
                                         <InputGroup className="mb-3">
-                                            <Input type="text" onChange={this.Email} placeholder="Enter Email" />
-                                        </InputGroup>
+                                                <Input type="text" name="email" onChange={this.handleChange} placeholder="Enter Email" />
+                                            </InputGroup>
+                                            <div className="text-danger">{this.state.errors.email}</div>
                                         <InputGroup className="mb-4">
-                                            <Input type="password" onChange={this.Password} placeholder="Enter Password" />
-                                        </InputGroup>
-                                        <Button onClick={this.login} color="success" block>Login</Button>
+                                                <Input type="password" name="password" onChange={this.handleChange} placeholder="Enter Password" />
+                                            </InputGroup>
+                                            <div className="text-danger">{this.state.errors.password}</div><br/>
+                                            <Button onClick={this.handleSubmit} color="success" block>Login</Button>
                                         </Form><br/>
                                         <div class="row" className="mb-2 pageheading" href=''>
                                             <Link class="col-sm-12 btn btn-primary" to="/Registration">Register Instead </Link>                                      
