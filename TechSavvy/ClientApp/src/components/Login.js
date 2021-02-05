@@ -2,21 +2,23 @@
 import './App.css';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 class Login extends Component {
-/**
-* Constuctor for user states (username, password, errors)
-* */
+/*
+* Constuctor for credential states (username, password, errors)
+*/
     constructor() {
         super();
         this.state = {
             Email: '',
             Password: '',
+            access_token: '',            
                errors: {              
                 email: '',
                 password: '',
                 invalidUser: '',
                }
-        }
+        }  
         this.Password = this?.Password?.bind(this);
         this.Email = this?.Email?.bind(this);
         this.handleSubmit = this?.handleSubmit?.bind(this);
@@ -25,11 +27,11 @@ class Login extends Component {
     }
 
 /**
- * Handle Submit function that will send a post with the user state to authorize the user in the back end
+ * Handle Submit function that will send a post with the credential state to authorize the user in the back end
  * @param {any} e
  */
-    handleSubmit(e) {
-        console.log(this.state.Email);
+    handleSubmit(e) {    
+        var safeToSubmit = true;
         //check all field validations
         if (this.state.Email === '') {
             this.setState(prevState => ({
@@ -37,7 +39,8 @@ class Login extends Component {
                     ...prevState.errors,
                     email: 'Please enter a valid Email',
                 }
-            }));  
+            }));
+            safeToSubmit = false;
         }
         if (this.state.Password === '') {
             this.setState(prevState => ({
@@ -45,37 +48,43 @@ class Login extends Component {
                     ...prevState.errors,
                     password: 'Password needs at least 1 uppercase and be 8 characters long',
                 },
-            }));   
+            }));
+            safeToSubmit = false;
         }
-        //fetch function to authenticate user
-        fetch('http://localhost:44383/Api/user/AuthenticateUser', {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                Email: this.state.Email,
+        //if no verification errors then proceed
+        if (safeToSubmit) {
+            var credentials = JSON.stringify({
                 Password: this.state.Password,
-            })
-        }).then((Response) => Response.json())
-            .then((result) => {
-                console.log(result);
-                if (result.Status == 'Invalid')
-                    this.setState(prevState => ({                     
-                        error: {
-                            ...prevState.errors,
-                            invalidUser:  'Invalid Login',
+                Email: this.state.Email
+            });
+            //axios post to send credentials and fetch response in the back end
+            //if successful then go to index page
+            //if unsuccessful display verification message.
+            axios.post('https://localhost:44383/api/user/AuthenticateUser', credentials, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (res.data.status === "invalid") {
+                    this.setState(prevstate => ({
+                        errors: {
+                            ...prevstate.errors,
+                            invalidUser: 'Invalid login. Check if email and password are correct.',
                         },
-                    }));                
-                else
-                    this.props.history.push("/Home");
-            })
+                    }));
+                }
+                else {
+                    //create user session for authentication purposes
+                    sessionStorage.setItem('user', JSON.stringify(res.data.user));                  
+                    window.location = '/SearchJobs';
+                }
+                    
+            });
+        }
     }
 
     /*
-    * NOTE: NOT FINISHED YET
-    *Handle validation and update state of user state by change
+    * 
     *@param  {any} event
     **/
     handleChange(event) {    
@@ -91,9 +100,7 @@ class Login extends Component {
     validate(event) {
         const name = event.target.name;
         const value = event.target.value;
-        let errors = this.state.errors;
-        console.log(this.state.errors);
-        console.log(value);
+
         //check event validation by name and set user state
         switch (name) {
             case 'email':
@@ -101,7 +108,7 @@ class Login extends Component {
                     Email: value,
                     errors: {
                         ...prevState.errors,
-                        email: value.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)") || value === '' ? "" : 'Is not a valid email',
+                        email: value.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)") || value === '' ? undefined : 'Is not a valid email',
                     }
                 }))             
                 break;
@@ -110,7 +117,7 @@ class Login extends Component {
                     Password: value,
                     errors: {
                         ...prevState.errors,
-                        password: value.match("(^(?=.*?[A-Z]).{8,}$)") || value === '' ? '' : 'Password needs at least 1 uppercase and be 8 characters long!',
+                        password: value.match("(^(?=.*?[A-Z]).{8,}$)") || value === '' ? undefined : 'Password needs at least 1 uppercase and be 8 characters long!',
                     },
                 }))
                 break;
@@ -125,8 +132,9 @@ class Login extends Component {
     //Login Form
     render() {
         return (
-            <div className="app flex-row align-items-center">
+            <div className="app flex-row align-items-center">              
                 <Container>
+                    <div class="title">Tech Savvy</div>
                     <Row className="justify-content-center">
                         <Col md="9" lg="7" xl="6">
                             <CardGroup>
@@ -143,7 +151,10 @@ class Login extends Component {
                                             </InputGroup>
                                             <div className="text-danger">{this.state.errors.password}</div><br/>
                                             <Button onClick={this.handleSubmit} color="success" block>Login</Button>
-                                        </Form><br/>
+                                        </Form><br />
+                                        <div class="row" className="mb-2 pageheading" href=''>
+                                            <Link class="col-sm-12 btn btn-primary" to="/FindEmail">Forgot Password? </Link>
+                                        </div><br />
                                         <div class="row" className="mb-2 pageheading" href=''>
                                             <Link class="col-sm-12 btn btn-primary" to="/Registration">Register Instead </Link>                                      
                                         </div>
