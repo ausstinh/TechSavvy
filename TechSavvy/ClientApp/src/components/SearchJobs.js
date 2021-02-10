@@ -52,13 +52,13 @@ export class SearchJobs extends Component {
             else {
                 this.setState(prevState => ({
                     Data: res.data.jobs.result,  
-                    Rows: {
-                        this.state.Data?.map((job) => {
-                            
-                        })
-                    }
                 })) 
-                
+                const rows = res.data.jobs.result?.map((job) => {
+                    [
+                        { id: job.id, title: this.state.Data.title, height: 100 }
+                    ];
+                })
+                console.log(rows);
                 console.log(this.state.Data);
             }
         });
@@ -160,7 +160,7 @@ export class SearchJobs extends Component {
                                          
                                             <div style={{ height: "790px", width: '45%' }}>
                                             
-                                                <DataGrid rows={this.state.Data} columns={columns} pageSize={10} disableColumnFilter={true} autoPageSize={true}/>
+                                                <DataGrid rows={rows} columns={columns} pageSize={10} disableColumnFilter={true} autoPageSize={true}/>
                                             </div>
                                         </CardBody>
                                     </Card>
