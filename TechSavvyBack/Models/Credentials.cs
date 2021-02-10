@@ -7,7 +7,13 @@ namespace TechSavvyBack.Models
 {
     public class Credentials
     {
-       public int Id { get; set; }
+        public Credentials() { }
+        public Credentials(string email, string password)
+        {
+            Email = email;
+            Password = password;
+        }
+
         public string Email { get; set; }
         public string Password { get; set; }
     }
