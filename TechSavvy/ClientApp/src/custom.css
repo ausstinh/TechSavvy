@@ -1,16 +1,22 @@
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+  color: #ffffff;
 }
-
+.title{
+    text-align: center;
+    font-size: 5em;
+    font-weight: bold;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: blue;
+}
 code {
   color: #E01A76;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
 }
 .App {
   text-align: center;
@@ -20,7 +26,7 @@ code {
 .navheader {
 margin-top: 10px;
 color :black !important;
-background-color: #b3beca !important;
+background-color: #1771d4 !important;
 }
 .AppBar {
     background-color: #007bff;

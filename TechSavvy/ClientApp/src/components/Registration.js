@@ -2,9 +2,11 @@
 import { Button, Card, CardBody, Col, Container, Form, Input, InputGroup, Row } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { event } from 'jquery';
+import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 class Registration extends Component {
     /**
-     * Constuctor for user states (username, password, errors) 
+     * Constuctor for user states (user (session), username, email, answer, question, password, confirm_passwords, errors) 
      * */
     constructor() {
         super();
@@ -13,6 +15,9 @@ class Registration extends Component {
             Email: '',
             Password: '',
             Confirm_password: '',
+            Question: '',
+            Answer: '',
+            User: this.props?.User,
             errors: {
                 areErrors: false,
                 username: '',
@@ -20,48 +25,55 @@ class Registration extends Component {
                 password: '',
                 confirm_password: '',
                 alreadyTakenEmail: '',
+                answer: '',
+                question: '',
             }
         }
-
+        this.User = this?.User?.bind(this);
         this.Email = this?.Email?.bind(this);
         this.Password = this?.Password?.bind(this);
         this.Username = this?.Username?.bind(this);
+        this.Question = this?.Question?.bind(this);
+        this.Answer = this?.Answer?.bind(this);
         this.handleSubmit = this?.handleSubmit?.bind(this);
         this.validate = this.validate.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleQuestion = this.handleQuestion.bind(this);
 
     }
-
     /**
      * Handle Submit function that will send a post with the user fields to create the user
      * @param {any} e
      */
     handleSubmit(e) {
-
+        var safeToSubmit = true;
         //check all field validations
         if (this.state.Email === '') {
             this.setState(prevState => ({             
                 errors: {
                     ...prevState.errors,
-                    email: 'Please enter Email',
+                    email: 'Please enter an Email',
                 },
             })); 
+            safeToSubmit = false;
         }
-        if (this.state.Password === '') {
+         if (this.state.Password === '') {
             this.setState(prevState => ({           
                 errors: {
                     ...prevState.errors,
-                    password: 'Please enter Password',
+                    password: 'Please enter a Password',
                 },
             }));
+            safeToSubmit = false;
         }
         if (this.state.Username === '') {
             this.setState(prevState => ({              
                 errors: {
                     ...prevState.errors,
-                    username: 'Please enter Username',
+                    username: 'Please enter an Username',
                 },
             }));
+            safeToSubmit = false;
         }
         if (this.state.Confirm_password !== this.state.Password) {
             this.setState(prevState => ({            
@@ -70,45 +82,75 @@ class Registration extends Component {
                     confirm_password: 'Please match passwords',
                 },
             }));
+            safeToSubmit = false;
         }
-
-        fetch('http://localhost:44383/Api/user/CreateUser', {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+        if (this.state.Answer === '') {
+            this.setState(prevState => ({
+                errors: {
+                    ...prevState.errors,
+                    answer: 'Please enter an Answer',
+                },
+            }));
+            safeToSubmit = false;
+        }
+        if (this.state.Question === '') {
+            this.setState(prevState => ({
+                errors: {
+                    ...prevState.errors,
+                    question: 'Please choose a security question',
+                },
+            }));
+            safeToSubmit = false;
+        }
+        console.log(this.state.Password);
+        console.log(this.state.Answer);
+        if (safeToSubmit) {
+            var user = JSON.stringify({
                 Username: this.state.Username,
                 Password: this.state.Password,
                 Email: this.state.Email,
-            })
-        }).then((Response) => Response.json())
-            .then((Result) => {
-                if (Result.Status == 'Success')
-                    this.props.history.push("/Home");
-                else {
+                Question: this.state.Question,
+                Answer: this.state.Answer
+            });
+            axios.post('https://localhost:44383/api/user/CreateUser', user, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+            ).then(res => {
+                if (res.data.status == "invalid") {
                     this.setState(prevState => ({
-                        error: {
+                        errors: {
                             ...prevState.errors,
-                            alreadyTakenEmail: 'Email is not Valid',
+                            alreadyTakenEmail: 'Email is already taken',
                         },
                     }));
                 }
-            })
+                else {
+                    sessionStorage.setItem('user', JSON.stringify(res.data.user));
+                    window.location = '/SearchJobs';
+                }
+            });
+        }
     }
 
-
     /*
-    * NOTE: NOT FINISHED YET BUT CLOSE
     *Handle validation and update state of user state by change
     *@param  {any} event
     * */
     handleChange(event) {
         this.validate(event);
     }
+       /*
+    * Update state of question radio button by change
+    *@param  {any} event
+    * */
+    handleQuestion(event) {
+        this.setState({
+            Question: event.target.value
+        });
+    }
     /*
-     * NOTE: NOT FINISHED YET BUT CLOSE
      *Handle validation and update state of user state by change
      *@param  {any} event
      * */
@@ -118,11 +160,7 @@ class Registration extends Component {
         }
         const name = event.target.name;
         const value = event.target.value;
-        let errors = this.state.errors;
-        console.log(name);
-        console.log(value);
-        console.log(value.match("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"));
-
+        console.log(name + value);
         //check event validation by name and set user state
         switch (name) {
             case 'email':
@@ -154,11 +192,20 @@ class Registration extends Component {
                 break;
             case 'confirm_password':
                 this.setState(prevState => ({
+                    Confirm_password: value,
                     errors: {
                         ...prevState.errors,
                         confirm_password: this.state.Password === value ? '' : 'Please match password',
                     }
-                }))       
+                }))  
+            case 'answer':
+                this.setState(prevState => ({
+                    Answer: value,
+                    errors: {
+                        ...prevState.errors,                   
+                    },
+                }));
+                break;
             default:
                 break;
         }
@@ -192,6 +239,45 @@ class Registration extends Component {
                                             <Input type="password" name="confirm_password" onChange={this.handleChange} placeholder="Enter Password Again" />
                                         </InputGroup >
                                         <div className="text-danger">{this.state.errors.confirm_password}</div>
+                                        <div>Please select a Security Question:</div>
+                                        <div className="radio">
+                                          <label>
+                                            <input
+                                              type="radio"
+                                              value="What is your mother's maiden name?"
+                                              checked={this.state.Question === "What is your mother's maiden name?"}    
+                                              onChange={this.handleQuestion}
+                                            />
+                                            What is your mother's maiden name?
+                                          </label>
+                                        </div>
+                                        <div className="radio">
+                                          <label>
+                                            <input
+                                              type="radio"
+                                              value="What was your first pet's name?"
+                                             checked={this.state.Question === "What was your first pet's name?"}
+                                             onChange={this.handleQuestion}                              
+                                            />
+                                            What was your first pet's name?
+                                          </label>
+                                        </div>
+                                        <div className="radio">
+                                          <label>
+                                            <input
+                                              type="radio"
+                                              value="What was your best friend's name growing up?"
+                                              checked={this.state.Question === "What was your best friend's name growing up?"}
+                                              onChange={this.handleQuestion}                           
+                                            />
+                                            What was your best friend's name growing up?
+                                          </label>
+                                        </div>
+                                        <div className="text-danger">{this.state.errors.question}</div>
+                                        <InputGroup className="mb-3">
+                                            <Input type="text" name="answer" onChange={this.handleChange} placeholder="Enter answer to selected question" />
+                                        </InputGroup >
+                                        <div className="text-danger">{this.state.errors.answer}</div>
                                         <Button onClick={this.handleSubmit} color="success" block > Create Account</Button>
                                     </Form><br />
                                     <div class="row" className="mb-2 pageheading">
