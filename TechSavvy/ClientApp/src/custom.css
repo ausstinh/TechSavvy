@@ -22,58 +22,11 @@ margin-top: 10px;
 color :black !important;
 background-color: #b3beca !important;
 }
-.AppBar {
-    background-color: #007bff;
-    border-color: #007bff;
-   
-}
-.justify-content-center {
-    margin-top: 20px;
-}
-.PageHeading {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    color: black !important;
-} 
-.card-group{
-    height: 100%;
-}
-.search-table{
-    height: 900px;
-}
-.search-bar {
-    background-color: white;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: black;
-}
 
-.MuiDataGrid-root .MuiDataGrid-columnSeparator {
-    display: none !important;
-}
-.MuiDataGrid-root .MuiDataGrid-colCell:hover .MuiDataGrid-menuIcon, .MuiDataGrid-root .MuiDataGrid-menuOpen {
-    visibility: hidden !important;
-}
-.MuiDataGrid-selectedRowCount{
-    display:none;    
-}
-.MuiDataGrid-footer > div:not(.MuiTablePagination-root) {
-    display: none;
-}
-.MuiDataGrid-root {
-    background-color: white;
-   
-}
-.MuiDataGrid-row{
-    max-height: 100px !important;
-    min-height: 100px !important;
-}
-.MuiDataGrid-cell MuiDataGrid-cellLeft {
-    min-height: 100px !important;
-}
-.MuiDataGrid-root .MuiDataGrid-cellLeft {
-    max-height: 100px !important;
-    min-height: 100px !important;
-}
-.MuiTablePagination-root{
-    margin-left: 120px;
-}
+
+.PageHeading
+{
+margin-top: 10px;
+margin-bottom: 10px;
+color :black !important;
+} 
