@@ -44,8 +44,17 @@ background-color: #1771d4 !important;
 .card-group{
     height: 100%;
 }
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.55em !important;
+}
 .search-table{
+    height: 950px;
+}
+.job-from{
     height: 900px;
+
 }
 .search-bar {
     background-color: white;
@@ -68,6 +77,7 @@ background-color: #1771d4 !important;
 .MuiDataGrid-root {
     background-color: white;
    
+    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 }
 .MuiDataGrid-row{
     max-height: 100px !important;
@@ -79,7 +89,72 @@ background-color: #1771d4 !important;
 .MuiDataGrid-root .MuiDataGrid-cellLeft {
     max-height: 100px !important;
     min-height: 100px !important;
+    white-space: unset !important;
 }
-.MuiTablePagination-root{
-    margin-left: 120px;
+
+.scroll {
+    height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.MuiDataGrid-row {
+    cursor: pointer;
+}
+
+.float-container {
+    border: 3px solid #fff;
+   
+    height: 800px;
+}
+
+.float-child {
+    width: 30%;
+    float: left; 
+}
+.float-child-job {
+    width: 70%;
+    float: left;
+}
+.job-card{
+    height: 800px;
+    background-color: white;
+}
+.MuiDataGrid-cell{
+    font-size: 1.3em;
+}
+.company-logo {
+    height: 100px;
+    object-fit: contain;
+}
+
+.job-button {
+    height: 50px;
+    display: block;
+    padding: 8px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    float: right;
+}
+.react-search-field-button {
+    background-color: #007bff;
+    color: #fff;
+}
+.job-container {
+    overflow: auto;
+    height: 770px;
+}
+.companny-url{
+    color:Highlight;
+    text-decoration:underline;
+    padding: unset;
+
+}
+.companny-url:hover {
+    color: Highlight;
+    text-decoration: underline;
+    padding: unset;
+}
+.job-saved {
+    text-align: end;
 }

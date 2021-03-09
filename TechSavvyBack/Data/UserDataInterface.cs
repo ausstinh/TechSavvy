@@ -48,18 +48,20 @@ namespace TechSavvyBack.Data
         /*
         *Not used yet
         */
-        User[] ReadAll();
+        List<User> ReadAll(User user);
         /*
         *Not used yet
         */
-        bool Delete(int userId);
+        bool Delete(User user);
         /*
         *Not used yet
         */
-        bool SuspendUser(int userId);
+        bool SuspendUser(User user);
         /*
-        *Not used yet
+        *Updates the user's recent search keys in the database
+        *@param {SearchKey} searchKey
+        *returns string
         */
-        string[] GetRecentSearches(int userId);
+        string UpdateRecentSearches(SearchKey searchKey);
     }
 }

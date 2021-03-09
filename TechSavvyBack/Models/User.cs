@@ -22,7 +22,16 @@ namespace TechSavvyBack.Models
             LastLoginAt = lastLoginAt;
             RecentSearches = recentSearches;
         }
-
+        public User(int id, string username, string email, int isSuspended, int administartorRole, DateTime accountCreatedAt, DateTime lastLoginAt)
+        {
+            Id = id;
+            Username = username;
+            IsSuspended = isSuspended;
+            Email = email;
+            AdministartorRole = administartorRole;
+            AccountCreatedAt = accountCreatedAt;
+            LastLoginAt = lastLoginAt;     
+        }
         public User(string username, string password, string email, string question, string answer)
         {
             Username = username;

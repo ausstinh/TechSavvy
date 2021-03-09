@@ -36,10 +36,8 @@ namespace TechSavvyBack
                             .AllowAnyMethod();
                     });
             });
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
-            });
+            services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
+            services.AddSession();
             //this is used to connect to MYSQL database with the connection string
             services.AddTransient<MySqlConnection>(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddRazorPages();

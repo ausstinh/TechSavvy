@@ -9,6 +9,7 @@ using TechSavvyBack.Models;
 using System.Security.Cryptography.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TechSavvyBack.Data;
 
 namespace TechSavvyBack.Business
 {
@@ -16,31 +17,33 @@ namespace TechSavvyBack.Business
     {
         //GITHUB JOBS API URL to send Rest API request to
         private const string URL = "https://jobs.github.com/positions.json";
+        JobDataService Jobservice = new JobDataService();
+        UserDataService Userservice = new UserDataService();
 
         /*
         * Please view method description in JobBusinessInterface
         */
-        public bool DeleteUserJob(int jobId)
+        public bool DeleteUserJob(Job job)
         {
-            throw new NotImplementedException();
+            return Jobservice.Delete(job);
         }
         /*
         * Please view method description in JobBusinessInterface
         */
-        public Job[] GetAllUserJobs(int userId)
+        public List<Job> GetAllUserJobs(User user)
         {
-            throw new NotImplementedException();
+            return Jobservice.ReadAll(user);
         }
         /*
         * Please view method description in JobBusinessInterface
         */
-        public bool SaveUserJob(Job job)
+        public int SaveUserJob(Job job)
         {
-            throw new NotImplementedException();
+         return Jobservice.Create(job);
         }
         /*
-         * Please view method description in JobBusinessInterface
-         */
+        * Please view method description in JobBusinessInterface
+        */
         public async Task<List<Job>> RetrieveJobsAsync()
         {
             HttpClient client = new HttpClient();
@@ -52,7 +55,7 @@ namespace TechSavvyBack.Business
             
             foreach (var job in data)
             {
-                Job tempJob = new Job(job.id, job.title, job.type, job.description, job.company, job.company_url, job.url, job.location, job.HowToApply, job.CompanyLogo, job.created_at);
+                Job tempJob = new Job(job.id, job.title, job.type, job.description, job.company, job.company_url, job.url, job.location, job.how_to_apply, job.company_logo, job.created_at);
                 jobList.Add(tempJob);
             }
 
@@ -62,9 +65,24 @@ namespace TechSavvyBack.Business
         /*
         * Please view method description in JobBusinessInterface
         */
-        public JsonResult SearchJob(string searchKey)
+        public async Task<List<Job>> SearchJobs(SearchKey searchKey)
         {
-            throw new NotImplementedException();
+            HttpClient client = new HttpClient();
+            List<Job> jobList = new List<Job>();
+
+            string response = await client.GetStringAsync(URL + "?description=" + searchKey.Key);
+
+            var data = JsonConvert.DeserializeObject<Job[]>(response);
+            if (data != null)
+            {
+                foreach (var job in data)
+                {
+                    Job tempJob = new Job(job.id, job.title, job.type, job.description, job.company, job.company_url, job.url, job.location, job.how_to_apply, job.company_logo, job.created_at);
+                    jobList.Add(tempJob);
+                }
+            }
+
+            return jobList;
         }
     }
 }

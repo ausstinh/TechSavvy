@@ -17,7 +17,7 @@ namespace TechSavvyBack.Business
         /*
          *Not used yet
          */
-        User[] GetAllUsers();
+        List<User> GetAllUsers(User user);
         /*
         *Recieve credentials data from controller and inserts them into the MYSQL database
         *@param {Credentials} credentials
@@ -55,15 +55,16 @@ namespace TechSavvyBack.Business
         /*
         *Not used yet
         */
-        bool DeleteUser(int userId);
+        bool DeleteUser(User user);
         /*
         *Not used yet
         */
-        bool SuspendUser(int userId);
+        bool SuspendUser(User user);
         /*
         *Not used yet
         */
         string[] GetRecentSearches(int userId);
+        string UpdateRecentSearches(SearchKey searchKey);
     };
 }
  

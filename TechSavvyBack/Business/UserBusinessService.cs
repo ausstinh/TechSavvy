@@ -29,9 +29,9 @@ namespace TechSavvyBack.Business
         /*
         * Please view method description in UserBusinessInterface
         */
-        public bool DeleteUser(int userId)
+        public bool DeleteUser(User user)
         {
-            return service.Delete(userId);
+            return service.Delete(user);
         }
         /*
         * Please view method description in UserBusinessInterface
@@ -43,9 +43,9 @@ namespace TechSavvyBack.Business
         /*
         * Please view method description in UserBusinessInterface
         */
-        public User[] GetAllUsers()
+        public List<User> GetAllUsers(User user)
         {
-            return GetAllUsers();
+            return GetAllUsers(user);
         }
         /*
         * Please view method description in UserBusinessInterface
@@ -71,10 +71,18 @@ namespace TechSavvyBack.Business
         /*
         * Please view method description in UserBusinessInterface
         */
-        public bool SuspendUser(int userId)
+        public bool SuspendUser(User user)
         {
-            return service.SuspendUser(userId);
+            return service.SuspendUser(user);
         }
+        /*
+        * Please view method description in UserBusinessInterface
+        */
+        public string UpdateRecentSearches(SearchKey searchKey)
+        {
+            return service.UpdateRecentSearches(searchKey);
+        }
+
         /*
         * Please view method description in UserBusinessInterface
         */

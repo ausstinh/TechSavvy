@@ -11,8 +11,9 @@ namespace TechSavvyBack.Models
         public string Status { set; get; }
         public string Message { set; get; }
         public User User { get; set; }
-        public User[] Users { get; set; }
+        public List<User> Users { get; set; }
         public Task<List<Job>> Jobs { get; set; }
+        public List<Job> UserJobs { get; set; }
         public string[] Data { get; set; }
         public string Question { get; set; }
         public string Answer { get; set; }

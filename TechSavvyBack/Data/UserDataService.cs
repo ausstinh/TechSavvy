@@ -139,9 +139,36 @@ namespace TechSavvyBack.Data
         /*
         * Please view method description in UserDataInterface
         */
-        public bool Delete(int userId)
+        public bool Delete(User user)
         {
-            throw new NotImplementedException();
+            string queryString = "DELETE * FROM users WHERE ID = @ID";
+            bool success = false;
+            using (connection)
+            {
+                //create command to delete job
+                MySqlCommand command = new MySqlCommand(queryString, connection);
+                command.Parameters.Add("@ID", MySqlDbType.Int32, 100).Value = user.Id;
+
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.RecordsAffected > 0)
+                    {
+                        success = true;
+                        reader.Close();
+
+                    }
+                    reader.Close();
+                    connection.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return success;
         }
         /*
         * Please view method description in UserDataInterface
@@ -192,9 +219,39 @@ namespace TechSavvyBack.Data
         /*
         * Please view method description in UserDataInterface
         */
-        public User[] ReadAll()
+        public List<User> ReadAll(User user)
         {
-            throw new NotImplementedException();
+            string queryString = "SELECT * FROM users WHERE ID <> @ID";
+            List<User> users = new List<User>();
+            using (connection)
+            {
+                //create command to find user with email
+                MySqlCommand command = new MySqlCommand(queryString, connection);
+                command.Parameters.Add("@ID", MySqlDbType.VarChar, 100).Value = user.Id;
+
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            //create user object based on found user
+                            users.Add(new User(reader.GetInt32(0), reader.GetString(1), reader.GetString(3), reader.GetInt32(6), reader.GetInt32(7), reader.GetDateTime(8), reader.GetDateTime(9)));
+                        }
+
+                    }
+                    reader.Close();
+                    connection.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return users;
         }
         /*
         * Please view method description in UserDataInterface
@@ -239,9 +296,42 @@ namespace TechSavvyBack.Data
         /*
         * Please view method description in UserDataInterface
         */
-        public bool SuspendUser(int userId)
+        public bool SuspendUser(User user)
         {
-            throw new NotImplementedException();
+            //check if the user's password is updated or not
+            bool success = false;
+            string queryString = "UPDATE users SET SUSPENDED = @SUSPENDED WHERE ID = @ID";
+
+            using (connection)
+            {
+                //create command with new password to update user's password
+                MySqlCommand command = new MySqlCommand(queryString, connection);
+                command.Parameters.Add("@ID", MySqlDbType.Int32, 200).Value = user.Id;
+                if (user.IsSuspended == 0)
+                command.Parameters.Add("@SUSPENDED", MySqlDbType.Int32, 200).Value = 1;
+                else
+                command.Parameters.Add("@SUSPENDED", MySqlDbType.Int32, 200).Value = 0;
+
+                try
+                {
+                    connection.Open();
+                    //execute command
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    //check if user has been updated
+                    if (reader.RecordsAffected > 0)
+                    {
+                        success = true;
+                    }
+                    reader.Close();
+                    connection.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return success;
         }
         /*
         * Please view method description in UserDataInterface
@@ -286,6 +376,58 @@ namespace TechSavvyBack.Data
                 }
             }
             return success;
+        }
+
+        public string UpdateRecentSearches(SearchKey searchKey)
+        {
+            string recentSearches = null;         
+            
+            string queryString = "SELECT * FROM users WHERE EMAIL = @EMAIL";
+
+            using (connection)
+            {
+                //create command to find user with email
+                MySqlCommand command = new MySqlCommand(queryString, connection);
+                command.Parameters.Add("@EMAIL", MySqlDbType.VarChar, 100).Value = searchKey.User.Email;
+
+                try
+                {
+                    connection.Open();
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            //create user object based on found user
+                            recentSearches = reader.GetString(10);
+                        }
+                        reader.Close();
+                       queryString = "UPDATE users SET RECENTSEARCHES = @RECENTSEARCHES WHERE EMAIL = @EMAIL";
+                        //create command with new password to update user's password
+                        command = new MySqlCommand(queryString, connection);                       
+                        command.Parameters.Add("@EMAIL", MySqlDbType.VarChar, 100).Value = searchKey.User.Email;
+                        if(recentSearches != "")
+                        command.Parameters.Add("@RECENTSEARCHES", MySqlDbType.VarChar, 100).Value = recentSearches + "," + searchKey.Key;
+                        else
+                        command.Parameters.Add("@RECENTSEARCHES", MySqlDbType.VarChar, 100).Value = searchKey.Key;
+                        
+                        reader = command.ExecuteReader();
+                        if (reader.RecordsAffected > 0)
+                        {
+                            searchKey.User.RecentSearches = recentSearches + "," + searchKey.Key;
+                            reader.Close();                            
+                        }
+                    }
+                    reader.Close();
+                    connection.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return searchKey.User.RecentSearches;
         }
     }
 }

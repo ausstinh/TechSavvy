@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TechSavvyBack.Business;
+using TechSavvyBack.Helpers;
 using TechSavvyBack.Models;
 
 namespace TechSavvy.Controllers
@@ -14,6 +15,7 @@ namespace TechSavvy.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
+
         //instance of the user business service
         UserBusinessService BusinessService = new UserBusinessService();
         /*
@@ -27,7 +29,7 @@ namespace TechSavvy.Controllers
             //check if user exists in the database          
             var user = BusinessService.AuthenticateUser(credentials);
 
-            if(user.Username == null)
+            if(user?.Username == null)
             {
                 //send a response back to login page that user was not found
                 return new Response { Status = "invalid", Message = "invalid user." };
@@ -49,7 +51,7 @@ namespace TechSavvy.Controllers
             user.Password = passwordHash;
 
             var newUser = BusinessService.CreateUser(user);
-            if (newUser.Username == null)
+            if (newUser?.Username == null)
             {
                 return new Response { Status = "invalid", Message = "Invalid User." };
             }
@@ -123,6 +125,25 @@ namespace TechSavvy.Controllers
                 return new Response { Status = "invalid", Message = "invalid email" };
             }        
             return new Response { Status = "Success", Message = "User Updated" };
+        }
+        /*
+         *Recieve credentials data from login js page on the React app and inserts them into the MYSQL database
+         *@param {Credentials} credentials
+         *returns Response object
+         */
+        [HttpPost("{action}")]
+        public Response GetAllUsers([FromBody] User user)
+        {
+            //check if user exists in the database          
+            var users = BusinessService.GetAllUsers(user);
+
+            if (users == null)
+            {
+                //send a response back to login page that user was not found
+                return new Response { Status = "invalid", Message = "No users found." };
+            }          
+            return new Response { Status = "valid", Message = "user found.", Users = users };
+
         }
     }
 }

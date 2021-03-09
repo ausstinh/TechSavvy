@@ -9,16 +9,20 @@ namespace TechSavvyBack.Data
     public interface JobDataInterface
     {
         /*
-        *Not used yet
+        *Retrieves all user's jobs from the database to display in the user's profile
+        *@param {int} userId
+        *returns list of Jobs
         */
-        Job[] ReadAll(int userId);
+        List<Job> ReadAll(User user);
         /*
         *Not used yet
         */
-        Boolean Delete(int jobId);
+        bool Delete(Job job);
         /*
-        *Not used yet
+        *Saves job object to the user_jobs table to view in user's profile
+        *@param {Job} job
+        *returns int
         */
-        Boolean Create(Job job);
+        int Create(Job job);
     }
 }
