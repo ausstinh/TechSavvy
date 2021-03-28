@@ -11,7 +11,11 @@ namespace TechSavvyBack.Models
         {
 
         }
-        public User(int id, string username,  string email, int isSuspended, int administartorRole, DateTime accountCreatedAt, DateTime lastLoginAt, string recentSearches)
+        public User(int id)
+        {
+            Id = id;
+        }
+        public User(int id, string username,  string email, int isSuspended, int administartorRole, DateTime accountCreatedAt, DateTime lastLoginAt, string question, string recentSearches)
         {
             Id = id;
             Username = username;
@@ -20,6 +24,7 @@ namespace TechSavvyBack.Models
             AdministartorRole = administartorRole;
             AccountCreatedAt = accountCreatedAt;
             LastLoginAt = lastLoginAt;
+            Question = question;
             RecentSearches = recentSearches;
         }
         public User(int id, string username, string email, int isSuspended, int administartorRole, DateTime accountCreatedAt, DateTime lastLoginAt)

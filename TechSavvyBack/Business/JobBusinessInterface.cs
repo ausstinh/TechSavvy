@@ -17,15 +17,21 @@ namespace TechSavvyBack.Business
         */
         Task<List<Job>> SearchJobs(SearchKey searchKey);
         /*
-        *Not used yet
+        *Retrieves all user's jobs from the database to display in the user's profile
+        *@param {int} userId
+        *returns list of Jobs
         */
         List<Job> GetAllUserJobs(User userId);
         /*
-        *Not used yet
-        */
+       *delete job from the user_jobs table using job object
+       *@param {Job} job
+       *returns boolean
+       */
         bool DeleteUserJob(Job job);
         /*
-        *Not used yet
+        *Saves job object to the user_jobs table to view in user's profile
+        *@param {Job} job
+        *returns int
         */
         int SaveUserJob(Job job);
         /*

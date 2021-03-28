@@ -141,7 +141,7 @@ namespace TechSavvyBack.Data
         */
         public bool Delete(User user)
         {
-            string queryString = "DELETE * FROM users WHERE ID = @ID";
+            string queryString = "SELECT * FROM user_jobs WHERE users_id = @ID";
             bool success = false;
             using (connection)
             {
@@ -153,12 +153,40 @@ namespace TechSavvyBack.Data
                 {
                     connection.Open();
                     MySqlDataReader reader = command.ExecuteReader();
-
-                    if (reader.RecordsAffected > 0)
-                    {
-                        success = true;
+                    //check if the user has jobs saved then delete them
+                    if (reader.HasRows)
+                    {                      
                         reader.Close();
+                        queryString = "DELETE * FROM user_jobs WHERE users_id = @ID";
+                        command = new MySqlCommand(queryString, connection);
+                        command.Parameters.Add("@ID", MySqlDbType.Int32, 100).Value = user.Id;
+                        reader = command.ExecuteReader();
 
+                        if (reader.RecordsAffected > 0)
+                        {
+                            reader.Close();
+                            queryString = "DELETE * FROM users WHERE ID = @ID";
+                            command = new MySqlCommand(queryString, connection);
+                            command.Parameters.Add("@ID", MySqlDbType.Int32, 100).Value = user.Id;
+                            reader = command.ExecuteReader();
+                            if (reader.RecordsAffected > 0)
+                            {
+                                success = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //delete user
+                        reader.Close();
+                        queryString = "DELETE FROM users WHERE ID = @ID";
+                        command = new MySqlCommand(queryString, connection);
+                        command.Parameters.Add("@ID", MySqlDbType.Int32, 100).Value = user.Id;
+                        reader = command.ExecuteReader();
+                        if (reader.RecordsAffected > 0)
+                        {
+                            success = true;
+                        }
                     }
                     reader.Close();
                     connection.Close();
@@ -300,7 +328,7 @@ namespace TechSavvyBack.Data
         {
             //check if the user's password is updated or not
             bool success = false;
-            string queryString = "UPDATE users SET SUSPENDED = @SUSPENDED WHERE ID = @ID";
+            string queryString = "UPDATE users SET ISSUSPENDED = @SUSPENDED WHERE ID = @ID";
 
             using (connection)
             {
@@ -403,20 +431,35 @@ namespace TechSavvyBack.Data
                             recentSearches = reader.GetString(10);
                         }
                         reader.Close();
-                       queryString = "UPDATE users SET RECENTSEARCHES = @RECENTSEARCHES WHERE EMAIL = @EMAIL";
+                        if (searchKey.DeleteRecentSearches)
+                        {
+                            queryString = "UPDATE users SET RECENTSEARCHES = '' WHERE EMAIL = @EMAIL";
+                        }
+                        else
+                        {
+                            queryString = "UPDATE users SET RECENTSEARCHES = @RECENTSEARCHES WHERE EMAIL = @EMAIL";
+                        }
+
                         //create command with new password to update user's password
                         command = new MySqlCommand(queryString, connection);                       
                         command.Parameters.Add("@EMAIL", MySqlDbType.VarChar, 100).Value = searchKey.User.Email;
-                        if(recentSearches != "")
-                        command.Parameters.Add("@RECENTSEARCHES", MySqlDbType.VarChar, 100).Value = recentSearches + "," + searchKey.Key;
-                        else
-                        command.Parameters.Add("@RECENTSEARCHES", MySqlDbType.VarChar, 100).Value = searchKey.Key;
-                        
+                        if (!searchKey.DeleteRecentSearches)
+                        {
+                            if (recentSearches != "")
+                                command.Parameters.Add("@RECENTSEARCHES", MySqlDbType.VarChar, 100).Value = recentSearches + "," + searchKey.Key;
+                            else
+                                command.Parameters.Add("@RECENTSEARCHES", MySqlDbType.VarChar, 100).Value = searchKey.Key;
+                        }
                         reader = command.ExecuteReader();
-                        if (reader.RecordsAffected > 0)
+                        if (reader.RecordsAffected > 0 && !searchKey.DeleteRecentSearches)
                         {
                             searchKey.User.RecentSearches = recentSearches + "," + searchKey.Key;
                             reader.Close();                            
+                        }
+                        else if(reader.RecordsAffected > 0 && searchKey.DeleteRecentSearches)
+                        {
+                            searchKey.User.RecentSearches = "";
+                            reader.Close();
                         }
                     }
                     reader.Close();

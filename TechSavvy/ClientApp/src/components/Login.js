@@ -73,6 +73,14 @@ class Login extends Component {
                         },
                     }));
                 }
+                if (res.data.status === "suspended") {
+                    this.setState(prevstate => ({
+                        errors: {
+                            ...prevstate.errors,
+                            invalidUser: 'Access Denied. User is suspended.',
+                        },
+                    }));
+                }
                 else {
                     //create user session for authentication purposes
                     sessionStorage.setItem('user', JSON.stringify(res.data.user));                  

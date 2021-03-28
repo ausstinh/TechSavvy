@@ -46,15 +46,21 @@ namespace TechSavvyBack.Data
         */
         string ReadAnswer(User user);
         /*
-        *Not used yet
+        *Receive user data to get all users except current user
+        *@param {User} user
+        *returns User object List
         */
         List<User> ReadAll(User user);
         /*
-        *Not used yet
+        *Receive user data from controller to delete user from the database
+        *@param {User} user
+        *returns boolean
         */
         bool Delete(User user);
         /*
-        *Not used yet
+        *Receive user data from controller to suspend user from the site in the database
+        *@param {User} user
+        *returns boolean
         */
         bool SuspendUser(User user);
         /*

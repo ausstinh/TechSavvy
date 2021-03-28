@@ -45,7 +45,7 @@ namespace TechSavvyBack.Business
         */
         public List<User> GetAllUsers(User user)
         {
-            return GetAllUsers(user);
+            return service.ReadAll(user);
         }
         /*
         * Please view method description in UserBusinessInterface

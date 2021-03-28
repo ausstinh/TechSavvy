@@ -103,5 +103,27 @@ namespace TechSavvy.Controllers
             //send Job object array to be displayed on js page load
             return new Response { Status = "valid", Message = "jobs found.", UserJobs = jobs };
         }
+        /*
+        *Removes job from the users_job table to view job on the user's profile page
+        *@param {Job} job
+        *returns Response object
+        */
+        [HttpPost("{action}")]
+        public Response RemoveJob([FromBody] Job job)
+        {
+            //retrieve jobs from the REST API       
+            var success = JobBusinessService.DeleteUserJob(job);
+
+            //check if jobs are there 
+            //send a response back to search jobs js page with correct status 
+            if (success == false)
+            {
+                return new Response { Status = "invalid", Message = "Job was not deleted" };
+            }
+            
+            //send Job object array to be displayed on js page load
+            return new Response { Status = "valid", Message = "job deleted from your profile." };
+
+        }
     }
 }

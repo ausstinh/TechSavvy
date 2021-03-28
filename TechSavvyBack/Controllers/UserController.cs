@@ -34,7 +34,12 @@ namespace TechSavvy.Controllers
                 //send a response back to login page that user was not found
                 return new Response { Status = "invalid", Message = "invalid user." };
             }
-            User session = new User(user.Id, user.Username, user.Email, user.IsSuspended, user.AdministartorRole, user.AccountCreatedAt, user.LastLoginAt, user.RecentSearches);
+            if (user?.IsSuspended == 1)
+            {
+                //send a response back to login page that user was not found
+                return new Response { Status = "suspended", Message = "Access Denied. User is suspended." };
+            }
+            User session = new User(user.Id, user.Username, user.Email, user.IsSuspended, user.AdministartorRole, user.AccountCreatedAt, user.LastLoginAt, user.Question, user.RecentSearches);
             return new Response { Status = "valid", Message = "user found.", User = session };
 
         }
@@ -57,7 +62,7 @@ namespace TechSavvy.Controllers
             }
             else
             {
-                User session = new User(newUser.Id, newUser.Username, newUser.Email, newUser.IsSuspended, newUser.AdministartorRole, newUser.AccountCreatedAt, newUser.LastLoginAt, newUser.RecentSearches);
+                User session = new User(newUser.Id, newUser.Username, newUser.Email, newUser.IsSuspended, newUser.AdministartorRole, newUser.AccountCreatedAt, newUser.LastLoginAt, newUser.Question, newUser.RecentSearches);
                 return new Response { Status = "success", Message = "User Created", User = session };
             }
 
@@ -127,8 +132,8 @@ namespace TechSavvy.Controllers
             return new Response { Status = "Success", Message = "User Updated" };
         }
         /*
-         *Recieve credentials data from login js page on the React app and inserts them into the MYSQL database
-         *@param {Credentials} credentials
+         *Recieve user id data from manage users js page on the React app and retrieves all users from the MYSQL database excluding user logged in
+         *@param {User} user
          *returns Response object
          */
         [HttpPost("{action}")]
@@ -143,6 +148,68 @@ namespace TechSavvy.Controllers
                 return new Response { Status = "invalid", Message = "No users found." };
             }          
             return new Response { Status = "valid", Message = "user found.", Users = users };
+
+        }
+
+        /*
+        *Recieve credentials data from login js page on the React app and inserts them into the MYSQL database
+        *@param {Credentials} credentials
+        *returns Response object
+        */
+        [HttpPost("{action}")]
+        public Response ClearRecentSearches([FromBody] User user)
+        {
+            if (user == null)
+            {
+                //send a response back to login page that user was not found
+                return new Response { Status = "invalid", Message = "No users found." };
+            }
+            SearchKey key = new SearchKey();
+            key.User = user;
+            key.DeleteRecentSearches = true;
+            //check if user exists in the database          
+             user.RecentSearches = BusinessService.UpdateRecentSearches(key);
+
+       
+            return new Response { Status = "valid", User = user };
+
+        }
+
+        /*
+       *Recieve user id data from manage users js page on the React app and suspends user  
+       *@param {User} user
+       *returns Response object
+       */
+        [HttpPost("{action}")]
+        public Response SuspendUser([FromBody] User user)
+        {
+           
+            //check if user exists in the database          
+             var success = BusinessService.SuspendUser(user);
+
+            if(success)
+            return new Response { Status = "valid", Message = "User's suspention updated" };
+            else
+            return new Response { Status = "Invalid", Message = "User's suspention was not Suspended" };
+
+        }
+
+        /*
+         *Recieve user id data from manage users js page on the React app and deletes user  
+         *@param {User} user
+         *returns Response object
+         */
+        [HttpPost("{action}")]
+        public Response DeleteUser([FromBody] User user)
+        {
+
+            //check if user exists in the database          
+            var success = BusinessService.DeleteUser(user);
+
+            if (success)
+                return new Response { Status = "valid", Message = "User deleted." };
+            else
+                return new Response { Status = "Invalid", Message = "User was not deleted" };
 
         }
     }

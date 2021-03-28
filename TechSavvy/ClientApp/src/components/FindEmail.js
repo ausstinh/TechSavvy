@@ -157,8 +157,8 @@ class FindEmail extends Component {
     }
     //Security Question Form
     render() {
-        return ( 
-                this.state.Question ? (
+        return (
+            this.state.Question || JSON.parse(sessionStorage.getItem('user')).question ? (
                         <div className="app flex-row align-items-center">
                     <Container>
                         <div class="title">Security Question</div>

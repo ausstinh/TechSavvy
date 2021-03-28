@@ -15,7 +15,9 @@ namespace TechSavvyBack.Data
         */
         List<Job> ReadAll(User user);
         /*
-        *Not used yet
+        *delete job from the user_jobs table using job object
+        *@param {Job} job
+        *returns boolean
         */
         bool Delete(Job job);
         /*

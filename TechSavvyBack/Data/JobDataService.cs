@@ -40,12 +40,13 @@ namespace TechSavvyBack.Data
                     else
                     {
                         reader.Close();
-                        queryString = "INSERT INTO user_jobs (JOBID, TITLE, TYPE, DESCRIPTION, COMPANY, COMPANYURL, JOBURL, LOCATION, HOWTOAPPLY, COMPANYLOGO, users_id) VALUES (@JOBID, @TITLE, @TYPE, @DESCRIPTION, @COMPANY, @COMPANYURL, @JOBURL, @LOCATION, @HOWTOAPPLY, @COMPANYLOGO, @USERSID)";
+                        queryString = "INSERT INTO user_jobs (JOBID, TITLE, TYPE, CREATED_AT, DESCRIPTION, COMPANY, COMPANYURL, JOBURL, LOCATION, HOWTOAPPLY, COMPANYLOGO, users_id) VALUES (@JOBID, @TITLE, @TYPE, @CREATED_AT, @DESCRIPTION, @COMPANY, @COMPANYURL, @JOBURL, @LOCATION, @HOWTOAPPLY, @COMPANYLOGO, @USERSID)";
                         //create command with new password to update user's password
                         command = new MySqlCommand(queryString, connection);
                         command.Parameters.Add("@JOBID", MySqlDbType.VarChar, 100).Value = job.id;
                         command.Parameters.Add("@TITLE", MySqlDbType.VarChar, 100).Value = job.title;
                         command.Parameters.Add("@TYPE", MySqlDbType.VarChar, 100).Value = job.type;
+                        command.Parameters.Add("@CREATED_AT", MySqlDbType.VarChar, 100).Value = job.created_at;
                         command.Parameters.Add("@DESCRIPTION", MySqlDbType.VarChar, 100).Value = job.description;
                         command.Parameters.Add("@COMPANY", MySqlDbType.VarChar, 100).Value = job.company;
                         command.Parameters.Add("@COMPANYURL", MySqlDbType.VarChar, 100).Value = job.company_url;
@@ -77,13 +78,14 @@ namespace TechSavvyBack.Data
         */
         public bool Delete(Job job)
         {
-            string queryString = "DELETE * FROM user_jobs WHERE id = @ID";
+            string queryString = "DELETE FROM user_jobs WHERE ID = @ID AND users_id = @USERSID";
             bool success = false;
             using (connection)
             {
                 //create command to delete job
                 MySqlCommand command = new MySqlCommand(queryString, connection);
-                command.Parameters.Add("@ID", MySqlDbType.Int32, 100).Value = job.id;
+                command.Parameters.Add("@ID", MySqlDbType.Int32, 100).Value = job.jobId;
+                command.Parameters.Add("@USERSID", MySqlDbType.Int32, 100).Value = job.users_id;
 
                 try
                 {
@@ -127,8 +129,10 @@ namespace TechSavvyBack.Data
 
                     if (reader.HasRows)
                     {
-                        jobs.Add(new Job(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4), reader.GetString(5),
-                            reader.GetString(6), reader.GetString(7), reader.GetString(8), reader.GetString(9), reader.GetString(10)));
+                        while (reader.Read())
+                        {
+                            jobs.Add(new Job(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4), reader.GetString(5), reader.GetString(6), reader.GetString(7), reader.GetString(8), reader.GetString(9), reader.GetString(10), reader.GetString(11), reader.GetInt32(12)));
+                        }
                        
                     }
                     reader.Close();

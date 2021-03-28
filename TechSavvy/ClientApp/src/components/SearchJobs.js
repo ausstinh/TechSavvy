@@ -88,7 +88,6 @@ export class SearchJobs extends Component {
      */
     onJobSave() {
         var user = JSON.parse(sessionStorage.getItem('user'));
-        console.log(user["id"]);
         var job = JSON.stringify({
             id : this.state.Job?.id,
             title : this.state.Job?.title,
@@ -246,7 +245,7 @@ export class SearchJobs extends Component {
                                                         <div style={{ height: 800, width: '100%' }}>
                                                             <DataGrid id="JobTable" rows={this.state.Data} columns={columns} pageSize={7} onStateChange={ this.SelectFirstCell } onCellClick={this.handleCellClick} />
                                                         </div>                                                             
-                                                )}                                                
+                                                      )}                                                
                                                 </div>
                                                 {this.state.Data && (
                                                 <div className="float-child-job" id="JobForm">
@@ -263,6 +262,7 @@ export class SearchJobs extends Component {
                                                                 </div>
                                                                 <h3>{this.state.Job?.title}</h3>
                                                                 <h5>{this.state.Job?.company}</h5>
+                                                                <div>{this.state.Job?.created_at}</div>
                                                                 <div>Located: {this.state.Job?.location}</div>
                                                                 <div>{this.state.Job?.type}</div>                                                           
                                                                         <a className="companny-url" href={this.state.Job?.company_url} target="_blank" rel="noopener noreferrer">Company's Website</a><br/>

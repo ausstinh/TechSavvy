@@ -9,5 +9,7 @@ namespace TechSavvyBack.Models
     {
         public string Key { get; set; }
         public User User { get; set; }
+
+        public bool DeleteRecentSearches { get; set; }
     }
 }

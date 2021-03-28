@@ -40,7 +40,23 @@ namespace TechSavvyBack.Models
             this.created_at = created_at;
             this.users_id = users_id;
         }
-
+        public Job(int job_id, string id, string title, string type, string created_at, string description, string company, string company_url, string url, string location, string how_to_apply, string company_logo, int users_id)
+        {
+            this.jobId = job_id;
+            this.id = id;
+            this.title = title;
+            this.type = type;
+            this.created_at = created_at;
+            this.description = description;
+            this.company = company;
+            this.company_url = company_url;
+            this.url = url;
+            this.location = location;
+            this.how_to_apply = how_to_apply;
+            this.company_logo = company_logo;
+            this.users_id = users_id;
+        }
+        public int jobId { get; set; }
         public string id { get; set; }
         public string title { get; set; }
         public string type { get; set; }
