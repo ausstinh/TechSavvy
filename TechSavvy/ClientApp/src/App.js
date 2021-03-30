@@ -15,7 +15,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 function App() {   
     var user = JSON.parse(sessionStorage.getItem('user'));
-    console.log(user);
     //Router to navigate between login and register js pages
   return (  
     <Router>    
